@@ -155,6 +155,6 @@ server.delete('/v1/documents/:documentId', verifyToken, async(request, reply)=>{
 
 
 server.listen({
-    port: process.env.port ?? 3333,
+    port: process.env.PORT ?? 3333,
     host: '0.0.0.0',
 })
