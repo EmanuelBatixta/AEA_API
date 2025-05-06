@@ -14,4 +14,10 @@ export class Field {
             await sql`INSERT INTO signfield (document_id, signeremail, x, y) VALUES (${docId}, ${email}, ${x}, ${y})`;
         }
     }
+
+    async getField(docId){
+        return await sql`SELECT x, y FROM signfield WHERE document_id = ${docId}`
+    }
+
+    
 }

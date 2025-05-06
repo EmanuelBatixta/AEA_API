@@ -6,7 +6,13 @@ export class Signer{
     }
 
     async complete(authcode){
-        await sql`UPDATE signers SET status = 'signed' WHERE document_id = ${authcode}`
+        const result = await sql`SELECT name, email FROM signers WHERE authcode = ${authcode}`;
+        if (result.length === 0) {
+            return false;
+        } else{
+            await sql`UPDATE signers SET status = 'signed' WHERE document_id = ${authcode}`;
+            return true
+        }
     }
 
     async getSigners(docId){

@@ -18,7 +18,6 @@ export class Doc{
 
     async complete(docId){
         await sql`UPDATE documents SET status = 'completed' WHERE document_id = ${docId}`
-
     }
 
     async deleteDoc(docId){
@@ -29,7 +28,7 @@ export class Doc{
 
     async getDoc(docId){
         const doc = await sql`SELECT d.document_id AS doc_id, d.status AS d_status, email, s.status AS s_status FROM documents d JOIN signers s ON d.document_id = s.document_id WHERE d.document_id = ${docId}`
-        const teste =  {
+        const docFormated =  {
             documentId: doc[0].doc_id, 
             status: doc[0].d_status,
             signers: [{
@@ -37,11 +36,7 @@ export class Doc{
                 status: doc[0].s_status
             }]
         };
-        return teste
-    }
-
-    async prepareSign(docId){
-
+        return docFormated
     }
 }
 

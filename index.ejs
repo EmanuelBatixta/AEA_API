@@ -49,7 +49,7 @@
             user-select: none;
             text-align: center;
           }
-           #menu .signature-preview {
+          #menu .signature-preview {
             width: 100%;
             height: auto;
             border: 1px dashed #ccc;
@@ -77,6 +77,14 @@
           #menu button:hover {
             background-color: #0056b3;
           }
+          #auth{
+            text-align: center;
+          }
+          #code{
+            border: 1px solid #ccc;
+            padding: .5rem;
+            border-radius: 4px;
+          }
         </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     </head>
@@ -94,6 +102,9 @@
               <p id="user-email">E-mail: <%= signerEmail %></p>
               <p id="timestamp">Data e Hora: </p>
             </div>
+            <label for="code" id="auth">Codigo de Autenticação:
+              <input type="text" name="code" id="code">
+            </label>
             <button id="sign-button">Executar Assinatura</button>
           </div>
         <script>
@@ -110,8 +121,8 @@
             //document.getElementById('user-email').textContent = `E-mail: ${userEmail}`;
 
             function formatTimestamp() {
-                const now = new Date();
-                return `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+              const now = new Date();
+              return `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
             }
 
             document.getElementById('timestamp').textContent = `Data e Hora: ${formatTimestamp()}`;
@@ -123,7 +134,7 @@
             let scale = 1.5;
 
             function renderPage(pageNum) {
-                pdfDoc.getPage(pageNum).then((page) => {
+              pdfDoc.getPage(pageNum).then((page) => {
                 const container = document.getElementById('pdf-renderer');
                 const containerWidth = container.offsetWidth;
                 const containerHeight = container.offsetHeight;
@@ -139,75 +150,77 @@
                 canvas.height = adjustedViewport.height;
 
                 const renderContext = {
-                    canvasContext: ctx,
-                    viewport: adjustedViewport,
+                  canvasContext: ctx,
+                  viewport: adjustedViewport,
                 };
 
                 page.render(renderContext);
 
-                });
+              });
             }
 
             pdfjsLib.getDocument(pdfUrl).promise.then((pdf) => {
-                pdfDoc = pdf;
-                renderPage(1);
+              pdfDoc = pdf;
+              renderPage(1);
             })
 
             let dragOffsetX = 0;
             let dragOffsetY = 0;
 
             signature.addEventListener('dragstart', (event) => {
-                const rect = signature.getBoundingClientRect();
-                dragOffsetX = event.clientX - rect.left;
-                dragOffsetY = event.clientY - rect.top;
-                console.log(dragOffsetX, dragOffsetY)
+              const rect = signature.getBoundingClientRect();
+              dragOffsetX = event.clientX - rect.left;
+              dragOffsetY = event.clientY - rect.top;
+              console.log(dragOffsetX, dragOffsetY)
 
-                event.dataTransfer.setDragImage(new Image(), 0, 0)
+              event.dataTransfer.setDragImage(new Image(), 0, 0)
             });
 
             canvas.addEventListener('dragover', (event) => {
-                event.preventDefault();
+              event.preventDefault();
             });
 
+            // mover o ponto e enviar
             canvas.addEventListener('drop', async (event) => {
-                event.preventDefault();
+              event.preventDefault();
 
-                const rect = canvas.getBoundingClientRect();
+              const rect = canvas.getBoundingClientRect();
 
-                const x = event.clientX - rect.left - dragOffsetX;
-                const y = event.clientY - rect.top - dragOffsetY;
+              const x = event.clientX - rect.left - dragOffsetX;
+              const y = event.clientY - rect.top - dragOffsetY;
 
-                signature.style.left = `${Math.max(0, Math.min(x, rect.width - signature.offsetWidth))}px`; // Restrição horizontal
-                signature.style.top = `${Math.max(0, Math.min(y, rect.height - signature.offsetHeight))}px`; // Restrição vertical
+              signature.style.left = `${Math.max(0, Math.min(x, rect.width - signature.offsetWidth))}px`; // Restrição horizontal
+              signature.style.top = `${Math.max(0, Math.min(y, rect.height - signature.offsetHeight))}px`; // Restrição vertical
 
-                //console.log('Coordenadas finais:', { x, y });
+              //console.log('Coordenadas finais:', { x, y });
 
-                {{await fetch(`/v1/documents/<%= id %>/signature-fields`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json',
-                           authorization: `Bearer <%= token %>`
-                },
-                body: JSON.stringify({ id: "<%= id %>", x: x, y: y, email: userEmail }),
-                })
-                .then((response) => response.json())
-                .then((data) => console.log(data))
-                .catch((error) => console.error('Erro ao salvar coordenadas:', error));
-                }}  
+              {await fetch(`/v1/documents/<%= id %>/signature-fields`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json',
+                          authorization: `Bearer <%= token %>`
+              },
+              body: JSON.stringify({ id: "<%= id %>", x: x, y: y, email: userEmail }),
+              })
+              .then((response) => response.json())
+              .then((data) => console.log(data))
+              .catch((error) => console.error('Erro ao salvar coordenadas:', error));
+              }  
             })
 
+            // assinar documento
             signButton.addEventListener('click', async () =>{
-              {{await fetch(`/v1/documents/<%= id %>/signature-fields`, {
+              const code = document.querySelector("#code").value.trim()
+              {await fetch(`/v1/documents/<%= id %>/sign`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json',
-                           authorization: `Bearer <%= token %>`
+                            authorization: `Bearer <%= token %>`
                 },
-                body: JSON.stringify({ id: "<%= id %>", x: x, y: y, email: userEmail }),
+                body: JSON.stringify({ id: "<%= id %>", authcode: code, email: userEmail, name: userName}),
                 })
                 .then((response) => response.json())
                 .then((data) => console.log(data))
-                .catch((error) => console.error('Erro ao salvar coordenadas:', error));
-                }}
-                alert('Assinatura executada!');
+                .catch((error) => console.error('Erro ao assinar', error));
+              }
             });
         </script>
     </body>

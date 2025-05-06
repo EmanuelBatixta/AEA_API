@@ -9,6 +9,8 @@ import multer from 'multer';
 import { Signer } from './signers.js';
 import path from 'path';
 import { Field } from './field.js';
+import { PDFDocument } from 'pdf-lib';
+import fs from 'fs';
 
 dotenv.config()
 const server = express()
@@ -104,6 +106,36 @@ server.post('/v1/documents/:documentId/signature-fields', verifyToken,  async(re
     const signer = new Field()
     signer.addField(id, email, x, y)
     return reply.status(200).send({ "message": "Campos de assinatura definidos com sucesso." })   
+})
+
+//ADICIONAR A ASSINATURA
+server.post('/v1/documents/:documentId/sign', verifyToken,  async(request, reply)=> {
+    const {id, authcode, name, email, } = request.body
+    const signer = new Signer()
+    const now = new Date();
+    const doc = new Doc()
+    const field = await new Field().getField(id)
+    const date =  `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`
+
+    const pdfBytes = fs.readFileSync(`uploads/${id}.pdf`);
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const page = pdfDoc.getPages()[0];
+
+    page.drawText(`Nome: ${name}\nEmail: ${email}\nData: ${date}`, {
+        x: field[0].x,
+        y: field[0].y,
+        size: 14,
+    });
+
+    const modifiedPdfBytes = await pdfDoc.save();
+    fs.writeFileSync(`uploads/${id}.pdf`, modifiedPdfBytes);
+
+    if (await signer.complete(authcode)){
+        doc.complete(id)
+        return reply.status(200).send({ "message": "Documento assinado com sucesso." })
+    } else {
+        return reply.status(401).send({ "message": "Falha ao assinar" })   
+    }
 })  
 
 // DELETE METHODS ------------------------------------------------
@@ -111,11 +143,11 @@ server.delete('/v1/documents/:documentId', verifyToken, async(request, reply)=>{
     const id = request.params.documentId
     const filePath = `uploads/${id}.pdf`;
     const doc = new Doc()
-    doc.deleteDoc(id, filePath)
     unlink.unlink(filePath, (err)=>{
         if (err){
             return reply.status(500).send({ error: err })
         } else {
+            doc.deleteDoc(id, filePath)
             return reply.status(200).send({ message: "Documento excluido com sucesso" })
         }
     })      
