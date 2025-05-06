@@ -1,16 +1,12 @@
-import { mkdir } from 'fs';
 import multer from 'multer';
 import path from 'path';
 
 export const config = {
     storage: multer.diskStorage({
     destination: (req, file, callback) =>{
-        if(!path.dirname(path.resolve('uploads'))){
-            mkdir(path.resolve(uploads))
-            callback(null, path.resolve('uploads'))
-        } else{
-            callback(null, path.resolve('uploads'))
-        }
+        
+        callback(null, path.resolve('uploads'))
+
     },
     filename: (req, file, callback)=>{
         const time = new Date().getTime()

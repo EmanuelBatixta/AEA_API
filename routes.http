@@ -1,0 +1,20 @@
+POST http://localhost:3333/v1/documents/1746239567341/signers
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXl3b3JkIjoia2V5IiwiaWF0IjoxNzQ2MjIxMzkyfQ.N4Z_NnjjbdHIyUAFeWSpxyATzCRoUMtAcnFCol0cfMo
+
+    {
+        "name": "Teste",
+        "email": "Teste@Teste.com",
+        "authcode": "123456",
+        "order": 1
+    }
+
+###
+GET http://localhost:3333/v1/documents/1746239567341/prepare-signature
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXl3b3JkIjoia2V5IiwiaWF0IjoxNzQ2MjIxMzkyfQ.N4Z_NnjjbdHIyUAFeWSpxyATzCRoUMtAcnFCol0cfMo
+
+### 
+GET http://localhost:3333/v1/documents/1746239567341/download
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXl3b3JkIjoia2V5IiwiaWF0IjoxNzQ2MjIxMzkyfQ.N4Z_NnjjbdHIyUAFeWSpxyATzCRoUMtAcnFCol0cfMo
