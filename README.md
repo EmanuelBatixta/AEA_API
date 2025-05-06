@@ -35,7 +35,7 @@ Certifique-se de ter os seguintes requisitos instalados:
     ```
 3. Instale as dependências:
     ```bash
-    [comando para instalar dependências]
+    npm install
     ```
 
 ## Uso
