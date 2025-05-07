@@ -19,4 +19,5 @@ export class Signer{
         const signers = await sql`SELECT * FROM signers WHERE document_id = ${docId}`
         return signers
     }
+    
 }

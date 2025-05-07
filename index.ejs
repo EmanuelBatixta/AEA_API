@@ -12,6 +12,7 @@
             overflow: hidden;
           }
           #pdf-renderer {
+            width: 100%;
             flex: 1;
             border-right: 1px solid #ddd;
             position: relative;
@@ -173,7 +174,7 @@
               dragOffsetY = event.clientY - rect.top;
               console.log(dragOffsetX, dragOffsetY)
 
-              event.dataTransfer.setDragImage(new Image(), 0, 0)
+              //event.dataTransfer.setDragImage(new Image(), 0, 0)
             });
 
             canvas.addEventListener('dragover', (event) => {

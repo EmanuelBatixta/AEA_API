@@ -1,6 +1,8 @@
 import fs from 'node:fs';
-import {sql} from './db.js';
+import { sql } from './db.js';
 import { PDFDocument } from 'pdf-lib';
+import unlink from 'fs';
+import { Field } from './field.js'
 
 export class Doc{
     async addDoc(docId){
@@ -16,14 +18,36 @@ export class Doc{
         await sql`INSERT INTO documents (document_id, status) VALUES (${docId}, 'in_progress')`
     }
 
-    async complete(docId){
+    async complete(docId, name, email){
+        const now = new Date();
+        const field = await new Field().getField(docId)
+        const date =  `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`
+        const pdfBytes = fs.readFileSync(`uploads/${docId}.pdf`);
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+        const page = pdfDoc.getPages()[0];
+    
+        page.drawText(`Assinado digitalmente por:\n${name.toUpperCase()}\n${email}\nData: ${date}`, {
+            x: field[0].x,
+            y: field[0].y,
+            size: 14,
+        });
+    
+        const modifiedPdfBytes = await pdfDoc.save();
+        fs.writeFileSync(`uploads/${docId}.pdf`, modifiedPdfBytes);
         await sql`UPDATE documents SET status = 'completed' WHERE document_id = ${docId}`
     }
 
     async deleteDoc(docId){
-        await sql`DELETE FROM signField WHERE document_id = ${docId}`
-        await sql`DELETE FROM signers WHERE document_id = ${docId}`
-        await sql`DELETE FROM documents WHERE document_id = ${docId}`
+        unlink.unlink(`uploads/${docId}.pdf`, async (err)=>{
+            if (err){
+                return false
+            } else {
+                await sql`DELETE FROM signField WHERE document_id = ${docId}`
+                await sql`DELETE FROM signers WHERE document_id = ${docId}`
+                await sql`DELETE FROM documents WHERE document_id = ${docId}`               
+                return true
+            }
+        })      
     }
 
     async getDoc(docId){

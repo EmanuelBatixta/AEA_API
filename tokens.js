@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { request, response } from 'express';
 
 dotenv.config()
 
@@ -20,5 +21,22 @@ export class UsuarioToken {
             return false
         }
     }
+
+    verify(request, response, next) {
+        const token = request.headers.authorization ? request.headers.authorization.split(' ')[1] : null
+           
+        if(this.autenticarToken(token)) {
+            jwt.verify(token, process.env.JWT_SECRET, (err, decodes)=> {
+                if(err) return response.status(401).send({ message: "Token Invalido" })
+                    
+                request.token = decodes.token;
+                next()
+            })
+        } else{
+            return response.status(401).send({ message: "Token Invalido" })
+        }
+    }
 }
 
+const usuario = new UsuarioToken();
+export const verifyToken = usuario.verify.bind(usuario);
