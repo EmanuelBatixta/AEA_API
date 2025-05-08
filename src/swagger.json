@@ -139,6 +139,25 @@
                             }
                         }
                     }
+                },
+                "responses" : {
+                    "401" : {
+                        "description" :  "Não autorizado"
+                    },
+                    "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "documentId": {
+                                    "type" : "number",
+                                    "format" : "int"
+                                },
+                                "status": {
+                                    "type" : "string"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
