@@ -15,7 +15,7 @@ export class Doc{
         const newDoc = await doc.save();
         fs.writeFileSync(path, newDoc);
 
-        await sql`INSERT INTO documents (document_id, status) VALUES (${docId}, 'in_progress')`
+        await sql`INSERT INTO documents (document_id, status) VALUES (${docId}, 'in_progress')` ? true : false
     }
 
     async complete(docId, name, email){
@@ -33,8 +33,9 @@ export class Doc{
         });
     
         const modifiedPdfBytes = await pdfDoc.save();
+
         fs.writeFileSync(`uploads/${docId}.pdf`, modifiedPdfBytes);
-        await sql`UPDATE documents SET status = 'completed' WHERE document_id = ${docId}`
+        await sql`UPDATE documents SET status = 'completed' WHERE document_id = ${docId}` ? true : false
     }
 
     async deleteDoc(docId){
@@ -52,15 +53,23 @@ export class Doc{
 
     async getDoc(docId){
         const doc = await sql`SELECT d.document_id AS doc_id, d.status AS d_status, email, s.status AS s_status FROM documents d JOIN signers s ON d.document_id = s.document_id WHERE d.document_id = ${docId}`
-        const docFormated =  {
-            documentId: doc[0].doc_id, 
-            status: doc[0].d_status,
-            signers: [{
-                email: doc[0].email,
-                status: doc[0].s_status
-            }]
-        };
-        return docFormated
+        if (doc.length) {
+            const docFormated =  {
+                documentId: doc[0].doc_id, 
+                status: doc[0].d_status,
+                signers: [{
+                    email: doc[0].email,
+                    status: doc[0].s_status
+                }]
+            };
+            return docFormated
+
+        } else {
+            
+            return false
+        }
     }
 }
 
+const doc = new Doc()
+doc.getDoc("001")

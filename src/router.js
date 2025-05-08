@@ -21,12 +21,12 @@ router.get('/documents/:documentId', verifyToken, async(request, reply)=>{
     const id = request.params.documentId
     const doc = new Doc()
     const status = await doc.getDoc(id)
-    return reply.send(status)
+    status ? reply.send(status) : reply.status(400).send({ message : "Documento nao encontrado"})
 })
 
 
 // ESCOLHER O CAMPO 
-router.get('/documents/:documentId/prepare-signature',  async(request, reply)=>{ 
+router.get('/documents/:documentId/prepare-signature', verifyToken, async(request, reply)=>{ 
     const id = request.params.documentId
     const signer = await new Signer().getSigners(id)
     const signerEmail = signer[0].email
@@ -105,7 +105,11 @@ router.post('/documents/:documentId/sign', verifyToken,  async(request, reply)=>
 router.delete('/documents/:documentId', verifyToken, async(request, reply)=>{
     const id = request.params.documentId
     const doc = new Doc()
-    doc.deleteDoc(id) ? reply.status(200).send({ message: "Documento excluido com sucesso" }) : reply.status(500).send({ error: err })
+    if(doc.getDoc(id)){
+        doc.deleteDoc(id)? reply.status(200).send({ message: "Documento excluido com sucesso" }) : reply.status(500).send({ error: err }) 
+    } else {
+        reply.status(400).send({ message : "Documento nao encontrado"})
+    }
 })  
 
 
