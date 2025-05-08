@@ -8,7 +8,6 @@ import { config } from '../multerConfig.js'; // configurar o multer
 import { Doc } from '../doc.js';             // manipular documentos no db
 import { Signer } from '../signers.js';      // manipular assinantes no db
 import { Field } from '../field.js';         // manipular campos no db
-import swaggerUi from 'swagger-ui-express';
 
 dotenv.config()
 const router = Router()
@@ -17,14 +16,13 @@ const storage = multer(config)
 router.use('/documents/uploads', express.static(path.join(process.cwd(), "uploads")))
 
 // GET METHODS -----------------------------------------------
+// VISUALIZAR DOC
 router.get('/documents/:documentId', verifyToken, async(request, reply)=>{
     const id = request.params.documentId
     const doc = new Doc()
     const status = await doc.getDoc(id)
     return reply.send(status)
 })
-
-// VISUALIZAR DOC
 
 
 // ESCOLHER O CAMPO 
@@ -81,7 +79,8 @@ router.post('/documents/:documentId/signers', verifyToken, async(request, reply)
 
 //ADICIONAR O CAMPO DA ASSINATURA
 router.post('/documents/:documentId/signature-fields', verifyToken,  async(request, reply)=> {
-    const {id, x, y, email} = request.body
+    const {x, y, email} = request.body
+    const id = request.params.documentId
     const signer = new Field()
     signer.addField(id, email, x, y)
     return reply.status(200).send({ "message": "Campos de assinatura definidos com sucesso." })   
@@ -89,7 +88,8 @@ router.post('/documents/:documentId/signature-fields', verifyToken,  async(reque
 
 //ADICIONAR A ASSINATURA
 router.post('/documents/:documentId/sign', verifyToken,  async(request, reply)=> {
-    const {id, authcode, name, email, } = request.body
+    const { authcode, name, email, } = request.body
+    const id = request.params.documentId
     const signer = new Signer()
     const doc = new Doc()
 
