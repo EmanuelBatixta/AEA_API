@@ -1,10 +1,11 @@
 import express from 'express';              // criar o servidor
-import {router} from './src/router.js'
-import path from 'path';
+import { router } from './src/router.js'
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocs from './src/swagger.json' with { type: "json"}
+import { DB } from './db.js';
 
 const server = express()
+await new DB().createDB()
 //server.use(express.json())
 
 server.use('/v1', router)
