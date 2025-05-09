@@ -1,9 +1,9 @@
 import { Router } from "express";
-import express from 'express'; // criar o servidor
+import express from 'express';               // criar o servidor
 import multer from 'multer';
-import dotenv from 'dotenv';                // carregar variaveis de ambiente
+import dotenv from 'dotenv';                 // carregar variaveis de ambiente
 import path from 'path';
-import { verifyToken } from '../tokens.js'; // autenticar o token
+import { verifyToken } from '../tokens.js';  // autenticar o token
 import { config } from '../multerConfig.js'; // configurar o multer 
 import { Doc } from '../doc.js';             // manipular documentos no db
 import { Signer } from '../signers.js';      // manipular assinantes no db
@@ -21,19 +21,26 @@ router.get('/documents/:documentId', verifyToken, async(request, reply)=>{
     const id = request.params.documentId
     const doc = new Doc()
     const status = await doc.getDoc(id)
-    status ? reply.send(status) : reply.status(400).send({ message : "Documento nao encontrado"})
+    status.status === 200 ? reply.send(status.message) : reply.status(status.status).send({ message : status.message})
 })
 
 
 // ESCOLHER O CAMPO 
-router.get('/documents/:documentId/prepare-signature', verifyToken, async(request, reply)=>{ 
+router.get('/documents/:documentId/prepare-signature', async(request, reply)=>{ 
     const id = request.params.documentId
     const signer = await new Signer().getSigners(id)
-    const signerEmail = signer[0].email
-    const signerName = signer[0].name
-    const p = path.resolve('index.ejs')
-    const token = process.env.TOKEN
-    reply.render(p, { id, signerName, signerEmail, token })
+    if(signer.status === 200){
+        const signerEmail = signer.message[0].email
+        const signerName = signer.message[0].name
+        const p = path.resolve('src/index.ejs')
+        const token = process.env.TOKEN
+        reply.render(p, { id, signerName, signerEmail, token })
+
+    } else {
+        
+        return reply.status(signer.status).send({ message: signer.message })
+    }
+    
 })
 
 // BAIXAR DOCUMENTO DEPOIS DE PRONTO
@@ -48,7 +55,7 @@ router.get('/documents/:documentId/download', verifyToken, async(request, reply)
             }
         })
     } else {
-      return reply.status(409).send({ message: "Documento não está completo" })
+        return reply.status(409).send({ message: "Documento não está completo" })
     }
 })
 
@@ -58,11 +65,7 @@ router.get('/documents/:documentId/download', verifyToken, async(request, reply)
 router.post('/documents', verifyToken, storage.single('file'), async(request, reply)=>{
     const id = request.file.filename.split('.')[0]
     const doc = new Doc()
-    doc.addDoc(id)
-    return reply.status(200).send({
-        documentId: `${id}`,
-        status: "uploaded"
-    })
+    const result = doc.addDoc(id) ? reply.status(result.status).send({ message: result.message }) : reply.status(result.status).send({ message: result.message })
 })  
 
 //ADICIONAR QUEM ASSINARÁ
@@ -72,9 +75,9 @@ router.post('/documents/:documentId/signers', verifyToken, async(request, reply)
     const id = request.params.documentId
     const signer = new Signer()
 
-    signer.addSigner(id, name, email, authcode, order)
+    const result = await signer.addSigner(id, name, email, authcode, order)
 
-    return reply.status(200).send({ "message": "Signatários adicionados com sucesso." })   
+    return reply.status(result.status).send({ message: result.message })   
 })
 
 //ADICIONAR O CAMPO DA ASSINATURA
@@ -82,8 +85,8 @@ router.post('/documents/:documentId/signature-fields', verifyToken,  async(reque
     const {x, y, email} = request.body
     const id = request.params.documentId
     const signer = new Field()
-    signer.addField(id, email, x, y)
-    return reply.status(200).send({ "message": "Campos de assinatura definidos com sucesso." })   
+    const result = signer.addField(id, email, x, y)
+    return reply.status(result.status).send({ message: result.message })   
 })
 
 //ADICIONAR A ASSINATURA
@@ -92,12 +95,13 @@ router.post('/documents/:documentId/sign', verifyToken,  async(request, reply)=>
     const id = request.params.documentId
     const signer = new Signer()
     const doc = new Doc()
+    const result = await signer.complete(authcode)
 
-    if (await signer.complete(authcode)){
+    if (result.status === 200){
         doc.complete(id, name, email)
-        return reply.status(200).send({ "message": "Documento assinado com sucesso." })
+        return reply.status(result.status).send({ message: result.message })
     } else {
-        return reply.status(401).send({ "message": "Falha ao assinar" })   
+        return reply.status(result.status).send({ message: result.message })   
     }
 })  
 
@@ -105,10 +109,15 @@ router.post('/documents/:documentId/sign', verifyToken,  async(request, reply)=>
 router.delete('/documents/:documentId', verifyToken, async(request, reply)=>{
     const id = request.params.documentId
     const doc = new Doc()
-    if(doc.getDoc(id)){
-        doc.deleteDoc(id)? reply.status(200).send({ message: "Documento excluido com sucesso" }) : reply.status(500).send({ error: err }) 
+    const result = await doc.getDoc(id)
+    console.log(result)
+    if(result.status === 200){
+        const resultDoc = await doc.deleteDoc(id) 
+        result.status === 200 ?  reply.status(resultDoc.status).send({message: resultDoc.message})
+        : reply.status(resultDoc.status).send({message: resultDoc.message})
+        console.log(resultDoc)
     } else {
-        reply.status(400).send({ message : "Documento nao encontrado"})
+        reply.status(result.status).send({message: result.message})
     }
 })  
 

@@ -81,9 +81,6 @@
                 }],
                 "security" : [{ "bearerAuth" : [] }],
                 "responses" : {
-                    "500" : {
-                        "error" : "erro description"
-                    },
                     "401" : {
                         "description" :  "Não autorizado"
                     },
@@ -117,9 +114,6 @@
                     }],
                     "security" : [{ "bearerAuth" : [] }],
                     "responses" : {
-                    "500" : {
-                        "description" : "erro description"
-                    },
                     "401" : {
                         "description" :  "Não autorizado"
                     },
@@ -157,9 +151,6 @@
                     }
                 },
                 "responses" : {
-                    "500" : {
-                        "description" : "erro description"
-                    },
                     "401" : {
                         "description" :  "Não autorizado"
                     },
@@ -171,8 +162,8 @@
                                     "type" : "object",
                                     "properties" : {
                                         "documentId": {
-                                        "type" : "number",
-                                        "format" : "int"
+                                            "type" : "number",
+                                            "format" : "int"
                                         },
                                         "status": {
                                             "type" : "string"
@@ -209,6 +200,14 @@
                             }
                         }
                     }
+                },
+                "result":{
+                    "400": {
+                        "description": "Erro ao adicionar signatário."
+                    },
+                    "200":{
+                        "description": "Signatários adicionados com sucesso."
+                    }
                 }
             }
         },
@@ -232,6 +231,14 @@
                             }
                         }
                     }
+                },
+                "responses":{
+                    "400": {
+                        "description": "Não foi possivel adicionar o campo"
+                    },
+                    "200": {
+                        "description": "Campo adicionado com sucesso"
+                    }
                 }
             }
         },
@@ -254,6 +261,14 @@
                                 "$ref" : "#/components/schemas/signer"
                             }
                         }
+                    }
+                },
+                "responses":{
+                    "400": {
+                        "description": "Documento Assinado."
+                    },
+                    "200": {
+                        "description": "Erro ao assinar o documento"
                     }
                 }
             }

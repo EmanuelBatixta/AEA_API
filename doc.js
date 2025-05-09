@@ -6,16 +6,26 @@ import { Field } from './field.js'
 
 export class Doc{
     async addDoc(docId){
-        const path = `uploads/${docId}.pdf`
-        const data = fs.readFileSync(path)
-        //await unlink(path)
+        try{
+            const path = `uploads/${docId}.pdf`
+            const data = fs.readFileSync(path)
+            //await unlink(path)
 
-        const doc = await PDFDocument.load(data, { ignoreEncryption: true });
+            const doc = await PDFDocument.load(data, { ignoreEncryption: true });
 
-        const newDoc = await doc.save();
-        fs.writeFileSync(path, newDoc);
+            const newDoc = await doc.save()
+            fs.writeFileSync(path, newDoc);
 
-        await sql`INSERT INTO documents (document_id, status) VALUES (${docId}, 'in_progress')` ? true : false
+            await sql`INSERT INTO documents (document_id, status) VALUES (${docId}, 'in_progress')`
+
+            return {status: 200, message: {
+                "documentId": `${docId}`,
+                "status": "uploaded"
+                }}
+        }catch(err){
+            return {status: 400, message: "Não foi possivel adicionar o documento"}
+        }
+         
     }
 
     async complete(docId, name, email){
@@ -41,12 +51,12 @@ export class Doc{
     async deleteDoc(docId){
         unlink.unlink(`uploads/${docId}.pdf`, async (err)=>{
             if (err){
-                return false
+                return { status: 400, message: "Não foi possível deletar o documento" }
             } else {
                 await sql`DELETE FROM signField WHERE document_id = ${docId}`
                 await sql`DELETE FROM signers WHERE document_id = ${docId}`
                 await sql`DELETE FROM documents WHERE document_id = ${docId}`               
-                return true
+                return { status: 200, message: "Documento deletado com sucesso" }
             }
         })      
     }
@@ -62,14 +72,11 @@ export class Doc{
                     status: doc[0].s_status
                 }]
             };
-            return docFormated
+            return {status: 200, message: docFormated}
 
         } else {
             
-            return false
+            return {status: 400, message: "Documento nao encontrado"}
         }
     }
 }
-
-const doc = new Doc()
-doc.getDoc("001")
