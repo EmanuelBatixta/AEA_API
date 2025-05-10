@@ -15,7 +15,6 @@ function getSSLValues() {
     return process.env.NODE_ENV === 'production' ? true : false;
 };
 
-console.log(process.env.DATABASE_URL);
 export const sql = postgres(
     process.env.DATABASE_URL,
     {
