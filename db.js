@@ -1,11 +1,29 @@
 import postgres from 'postgres';
 import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config({
+    path: process.env.NODE_ENV === 'production' ? '.env' : '.env.development',
+})
 
-export const sql = postgres(process.env.DATABASE_URL, {ssl: 'require'}); 
+function getSSLValues() {
+    if (process.env.POSTGRES_CA) {
+        return {
+            ca: process.env.POSTGRES_CA,
+        }
+    }
 
-export class DB{
+    return process.env.NODE_ENV === 'production' ? true : false;
+};
+
+console.log(process.env.DATABASE_URL);
+export const sql = postgres(
+    process.env.DATABASE_URL,
+    {
+        ssl: getSSLValues(),
+    }
+);
+
+export class DB {
     async createDB() {
         try {
 
@@ -39,7 +57,7 @@ export class DB{
 
                 await sql`
                     CREATE TABLE IF NOT EXISTS signField(
-                        document_id VARCHAR(50) REFERENCES documents(document_id) PRIMARY KEY, 
+                        document_id VARCHAR(50) REFERENCES documents(document_id) PRIMARY KEY,
                         signerEmail VARCHAR(50),
                         page INT NOT NULL default 1,
                         x INT NOT NULL,
