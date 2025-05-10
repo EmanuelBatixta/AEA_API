@@ -29,22 +29,13 @@ router.get('/documents/:documentId', verifyToken, async(request, reply)=>{
 router.get('/documents/:documentId/prepare-signature', async(request, reply)=>{ 
     const id = request.params.documentId
     const signer = await new Signer().getSigners(id)
-    if (signer.message[0].status === "pending"){
-        if(signer.status === 200){
+    if(signer.status === 200){
         const signerEmail = signer.message[0].email
         const signerName = signer.message[0].name
         const p = path.resolve('src/index.ejs')
         const token = process.env.TOKEN
         reply.render(p, { id, signerName, signerEmail, token })
-
-        } else {
-            
-            return reply.status(signer.status).send({ message: signer.message })
-        }
-    }else{
-        return reply.status(400).send({message: "Documento já assinado!"})
     }
-    
 })
 
 // BAIXAR DOCUMENTO DEPOIS DE PRONTO
