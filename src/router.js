@@ -23,7 +23,7 @@ router.get('/documents/:documentId', verifyToken, async (request, reply) => {
     const id = request.params.documentId
     const doc = new Doc()
     const status = await doc.getDoc(id)
-    status.status === 200 ? reply.send(status.message) : reply.status(status.status).send({ message: status.message })
+    return reply.status(status.status).send({ message: status.message })
 })
 
 
@@ -62,7 +62,8 @@ router.get('/documents/:documentId/download', verifyToken, async (request, reply
 router.post('/documents', verifyToken, storage.single('file'), async (request, reply) => {
     const id = request.file.filename.split('.')[0]
     const doc = new Doc()
-    const result = doc.addDoc(id) ? reply.status(result.status).send({ message: result.message }) : reply.status(result.status).send({ message: result.message })
+    const result = doc.addDoc(id) 
+    return reply.status(result.status).send({ message: result.message })
 })
 
 //ADICIONAR QUEM ASSINARÁ
