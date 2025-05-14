@@ -58,8 +58,8 @@ export class DB {
                         document_id VARCHAR(50) REFERENCES documents(document_id) PRIMARY KEY,
                         signerEmail VARCHAR(50),
                         page INT NOT NULL default 1,
-                        x INT NOT NULL,
-                        y INT NOT NULL,
+                        x FLOAT NOT NULL,
+                        y FLOAT NOT NULL,
                         width FLOAT NOT NULL default 120,
                         height FLOAT NOT NULL default 70
                     );
