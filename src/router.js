@@ -3,6 +3,7 @@ import express from 'express';               // criar o servidor
 import multer from 'multer';
 import dotenv from 'dotenv';                 // carregar variaveis de ambiente
 import path from 'path';
+import fs from 'fs';                    // manipular arquivos
 import { verifyToken } from '../tokens.js';  // autenticar o token
 import { config } from '../multerConfig.js'; // configurar o multer
 import { Doc } from '../doc.js';             // manipular documentos no db
@@ -15,7 +16,9 @@ dotenv.config({
 const router = Router()
 
 const storage = multer(config)
-router.use('/documents/uploads', express.static(path.join(process.cwd(), "uploads")))
+const uploadsDir = path.join(process.cwd(), "uploads");
+fs.mkdirSync(uploadsDir, { recursive: true })
+router.use('/documents/uploads', express.static(uploadsDir))
 
 // GET METHODS -----------------------------------------------
 // VISUALIZAR DOC
@@ -60,9 +63,11 @@ router.get('/documents/:documentId/download', verifyToken, async (request, reply
 //POST METHODS -------------------------------------------------
 // ENVIAR ARQUIVOS
 router.post('/documents', verifyToken, storage.single('file'), async (request, reply) => {
+    console.log('recebi o arquivo', request.file);
     const id = request.file.filename.split('.')[0]
     const doc = new Doc()
-    const result = doc.addDoc(id) 
+    const result = await doc.addDoc(id, request.file);
+
     return reply.status(result.status).send({ message: result.message })
 })
 
