@@ -68,7 +68,6 @@ router.get('/documents/:documentId/download', verifyToken, async (request, reply
 //POST METHODS -------------------------------------------------
 // ENVIAR ARQUIVOS
 router.post('/documents', verifyToken, storage.single('file'), async (request, reply) => {
-    console.log('recebi o arquivo', request.file);
     const id = request.file.filename.split('.')[0]
     const doc = new Doc()
     const result = await doc.addDoc(id, request.file);
@@ -94,7 +93,6 @@ router.post('/documents/:documentId/signature-fields', verifyToken, async (reque
     const id = request.params.documentId
     const signer = new Field()
     const result = await signer.addField(id, email, x, y);
-    console.log(result);
 
     return reply.status(result.status).send({ message: result.message })
 })

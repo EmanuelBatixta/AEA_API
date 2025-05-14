@@ -18,7 +18,6 @@ test('GET /v1/documents/:documentId should return 200 and signers data', async (
     const response = await getDocumentData(documentId);
     const body = response.data;
 
-    console.log(response.data.message.signers);
     expect(response.status).toBe(200);
     expect(body).toHaveProperty('message');
     expect(body.message).toHaveProperty('documentId');
