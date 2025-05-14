@@ -46,7 +46,7 @@ export class Doc {
             size: 14,
         });
 
-        pdfDoc.getPermissions().set
+        // pdfDoc.getPermissions().set
         const modifiedPdfBytes = await pdfDoc.save();
 
         fs.writeFileSync(`uploads/${docId}.pdf`, modifiedPdfBytes);
