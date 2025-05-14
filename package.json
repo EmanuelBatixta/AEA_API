@@ -5,9 +5,9 @@
     "main": "index.js",
     "scripts": {
         "wait-for-postgres": "node infra/scripts/wait-for-postgres.js",
-        "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "nodemon server.js",
-        "start": "node server.js"
+        "start": "node server.js",
+        "test": "jest --runInBand"
     },
     "repository": {
         "type": "git",
@@ -31,5 +31,9 @@
         "pdf-lib": "^1.17.1",
         "postgres": "^3.4.5",
         "swagger-ui-express": "^5.0.1"
+    },
+    "devDependencies": {
+        "axios": "^1.9.0",
+        "jest": "^29.7.0"
     }
 }
