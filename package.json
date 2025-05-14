@@ -5,9 +5,11 @@
     "main": "index.js",
     "scripts": {
         "wait-for-postgres": "node infra/scripts/wait-for-postgres.js",
+        "wait-for-app": "node infra/scripts/wait-for-app.js",
         "dev": "nodemon server.js",
         "start": "node server.js",
-        "test": "jest --runInBand"
+        "test": "jest --runInBand",
+        "test:watch": "jest --watchAll --runInBand"
     },
     "repository": {
         "type": "git",
