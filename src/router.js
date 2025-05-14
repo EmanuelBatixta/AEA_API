@@ -93,7 +93,9 @@ router.post('/documents/:documentId/signature-fields', verifyToken, async (reque
     const { x, y, email } = request.body
     const id = request.params.documentId
     const signer = new Field()
-    const result = signer.addField(id, email, x, y)
+    const result = await signer.addField(id, email, x, y);
+    console.log(result);
+
     return reply.status(result.status).send({ message: result.message })
 })
 
@@ -103,7 +105,7 @@ router.post('/documents/:documentId/sign', verifyToken, async (request, reply) =
     const id = request.params.documentId
     const signer = new Signer()
     const doc = new Doc()
-    const result = await signer.complete(id)
+    const result = await signer.complete(id);
 
     if (result.status === 200) {
         doc.complete(id, name, email)
