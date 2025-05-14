@@ -1,47 +1,51 @@
 import fs from 'node:fs';
-import { sql } from './db.js';
 import { PDFDocument } from 'pdf-lib';
 import unlink from 'fs';
+import { join } from 'path';
+
+import { sql } from './db.js';
 import { Field } from './field.js'
 
-export class Doc{
-    async addDoc(docId){
-        try{
-            const path = `uploads/${docId}.pdf`
-            const data = fs.readFileSync(path)
-            //await unlink(path)
+export class Doc {
+    async addDoc(docId, file) {
+        try {
+            const path = join(process.cwd(), 'uploads', `${docId}.pdf`);
+            const data = fs.readFileSync(path);
 
             const doc = await PDFDocument.load(data, { ignoreEncryption: true });
 
-            const newDoc = await doc.save()
+            const newDoc = await doc.save();
             fs.writeFileSync(path, newDoc);
 
             await sql`INSERT INTO documents (document_id, status) VALUES (${docId}, 'in_progress')`
 
-            return {status: 200, message: {
-                "documentId": `${docId}`,
-                "status": "uploaded"
-                }}
-        }catch(err){
-            return {status: 400, message: "Não foi possivel adicionar o documento"}
+            return {
+                status: 200, message: {
+                    "documentId": `${docId}`,
+                    "status": "uploaded"
+                }
+            }
+        } catch (err) {
+            console.log(err);
+            return { status: 400, message: "Não foi possivel adicionar o documento" }
         }
-         
+
     }
 
-    async complete(docId, name, email){
+    async complete(docId, name, email) {
         const now = new Date();
         const field = await new Field().getField(docId)
-        const date =  `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`
+        const date = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`
         const pdfBytes = fs.readFileSync(`uploads/${docId}.pdf`);
         const pdfDoc = await PDFDocument.load(pdfBytes);
         const page = pdfDoc.getPages()[0];
-    
+
         page.drawText(`Assinado digitalmente por:\n${name.toUpperCase()}\n${email}\nData: ${date}`, {
             x: field[0].x,
             y: field[0].y,
             size: 14,
         });
-        
+
         pdfDoc.getPermissions().set
         const modifiedPdfBytes = await pdfDoc.save();
 
@@ -49,35 +53,35 @@ export class Doc{
         await sql`UPDATE documents SET status = 'completed' WHERE document_id = ${docId}` ? true : false
     }
 
-    async deleteDoc(docId){
-        unlink.unlink(`uploads/${docId}.pdf`, async (err)=>{
-            if (err){
+    async deleteDoc(docId) {
+        unlink.unlink(`uploads/${docId}.pdf`, async (err) => {
+            if (err) {
                 return { status: 400, message: "Não foi possível deletar o documento" }
             } else {
                 await sql`DELETE FROM signField WHERE document_id = ${docId}`
                 await sql`DELETE FROM signers WHERE document_id = ${docId}`
-                await sql`DELETE FROM documents WHERE document_id = ${docId}`               
+                await sql`DELETE FROM documents WHERE document_id = ${docId}`
                 return { status: 200, message: "Documento deletado com sucesso" }
             }
-        })      
+        })
     }
 
-    async getDoc(docId){
+    async getDoc(docId) {
         const doc = await sql`SELECT d.document_id AS doc_id, d.status AS d_status, email, s.status AS s_status FROM documents d JOIN signers s ON d.document_id = s.document_id WHERE d.document_id = ${docId}`
         if (doc.length) {
-            const docFormated =  {
-                documentId: doc[0].doc_id, 
+            const docFormated = {
+                documentId: doc[0].doc_id,
                 status: doc[0].d_status,
                 signers: [{
                     email: doc[0].email,
                     status: doc[0].s_status
                 }]
             };
-            return {status: 200, message: docFormated}
+            return { status: 200, message: docFormated }
 
         } else {
-            
-            return {status: 400, message: "Documento nao encontrado"}
+
+            return { status: 400, message: "Documento nao encontrado" }
         }
     }
 }
