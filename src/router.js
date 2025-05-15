@@ -52,8 +52,9 @@ router.get('/documents/:documentId/prepare-signature', async (request, reply) =>
 router.get('/documents/:documentId/download', verifyToken, async (request, reply) => {
     const id = request.params.documentId
     const doc = new Doc()
-    const status = await doc.getDoc(id)
-    if (status.status === 'completed') {
+    const status = await doc.getDoc(id);
+
+    if (status.message.status === 'completed') {
         reply.download(`uploads/${id}.pdf`, (err) => {
             if (err) {
                 return reply.status(500).send({ error: err })
