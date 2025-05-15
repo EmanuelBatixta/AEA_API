@@ -58,8 +58,76 @@ async function getDocumentData(documentId) {
     return response;
 }
 
+/**
+ * @typedef {Object} SignPosition
+ * @property {number} x
+ * @property {number} y
+ * @property {string} email
+ *
+ * @param {string} documentId
+ * @param {SignPosition} payload
+ */
+async function addSignPositionToDocument(documentId, payload) {
+    const response = await axios.post(
+        `http://localhost:3333/v1/documents/${documentId}/signature-fields`,
+        payload,
+        {
+            headers: {
+                Accept: 'application/json',
+                'Authorization': `Bearer ${process.env.TOKEN}`,
+            },
+        }
+    );
+
+    return response;
+}
+
+/**
+ * @typedef {Object} SignerPayload
+ * @property {string} name
+ * @property {string} email
+ *
+ * @param {string} documentId
+ * @param {SignerPayload} payload
+ */
+async function signDocument(documentId, payload) {
+    const response = await axios.post(
+        `http://localhost:3333/v1/documents/${documentId}/sign`,
+        payload,
+        {
+            headers: {
+                Accept: 'application/json',
+                'Authorization': `Bearer ${process.env.TOKEN}`,
+            },
+        }
+    );
+
+    return response;
+}
+
+async function downloadDocument(documentId) {
+    const response = await axios.get(
+        `http://localhost:3333/v1/documents/${documentId}/download`,
+        {
+            headers: {
+                'Authorization': `Bearer ${process.env.TOKEN}`,
+                Accept: '*/*',
+            },
+            params: {
+                type: 'PrinterFriendlyVersion',
+            },
+            responseType: 'arraybuffer',
+        }
+    );
+
+    return response;
+}
+
 module.exports = {
     uploadDocument,
     addSigner,
     getDocumentData,
+    addSignPositionToDocument,
+    signDocument,
+    downloadDocument,
 }
