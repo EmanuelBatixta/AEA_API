@@ -4,93 +4,101 @@
         "title": "Assinatura Eletrônica Avançada",
         "description": "API focada em manipulação de pdf com o foco em Assinatura virtual",
         "version": "1.0.0"
-    }, 
-    "servers" : [{
-        "url" : "http://localhost:3333/v1",
-        "description" : "API DE TESTE"
-    }],
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3333/v1",
+            "description": "API DE TESTE"
+        }
+    ],
     "paths": {
-        "/documents/{documentId}" : {
+        "/documents/{documentId}": {
             "get": {
-                "summary" : "Visualizar dados do documento",
-                "description" : "Essa rota ira buscar os dados do documento de acordo com o ID dele",
-                "tags" : ["Documents"],
-                "parameters" : [{
-                    "name" : "documentId",
-                    "in" : "path",
-                    "description" : "Id para a busca do documento",
-                    "required" : true 
-                }],
-                "security" : [{ "bearerAuth" : [] }],
-                "responses" : {
-                    "401" : {
-                        "description" :  "Não autorizado"
+                "summary": "Visualizar dados do documento",
+                "description": "Essa rota ira buscar os dados do documento de acordo com o ID dele",
+                "tags": ["Documents"],
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Id para a busca do documento",
+                        "required": true
+                    }
+                ],
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "401": {
+                        "description": "Não autorizado"
                     },
-                    "400" : {
-                        "description" : "Documento não encontrado"
+                    "400": {
+                        "description": "Documento não encontrado"
                     },
-                    "200" : {
-                        "description" : "OK",
-                        "content" : {
-                            "application/json" : {
-                                "schema" : {
-                                    "$ref" : "#/components/schemas/doc"
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/doc"
                                 }
                             }
                         }
                     }
                 }
             },
-            "delete" : {
-                "summary" : "Deletar o documento",
-                "description" : "Essa rota ira deletar o documento atraves do Id",
-                "tags" : ["Documents"],
-                "parameters" : [{
-                    "name" : "documentId",
-                    "in" : "path",
-                    "description" : "Id para a busca do documento",
-                    "required" : true 
-                }],
-                "security" : [{ "bearerAuth" : [] }],
-                "response" : {
-                    "500" : {
-                        "description" : "erro description"
+            "delete": {
+                "summary": "Deletar o documento",
+                "description": "Essa rota ira deletar o documento atraves do Id",
+                "tags": ["Documents"],
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Id para a busca do documento",
+                        "required": true
+                    }
+                ],
+                "security": [{ "bearerAuth": [] }],
+                "response": {
+                    "500": {
+                        "description": "erro description"
                     },
-                    "400" : {
-                        "description" : "Documento nao encontrado"
+                    "400": {
+                        "description": "Documento nao encontrado"
                     },
-                    "401" : {
-                        "description" :  "Não autorizado"
+                    "401": {
+                        "description": "Não autorizado"
                     },
-                    "200" : {
-                        "description" : "Documento excluido com sucesso"
+                    "200": {
+                        "description": "Documento excluido com sucesso"
                     }
                 }
             }
         },
-        "/documents/{documentId}/prepare-signature" : {
-            "get" : {
-                "summary" : "Selecionar o campo de assinatura",
-                "description" : "Essa rota ira selecionar a posição no documento que deverá ficar a assinatura",
-                "tags" : ["Signature"],
-                "parameters" : [{
-                    "name" : "documentId",
-                    "in" : "path",
-                    "description" : "Id para a busca do documento",
-                    "required" : true 
-                }],
-                "security" : [{ "bearerAuth" : [] }],
-                "responses" : {
-                    "401" : {
-                        "description" :  "Não autorizado"
+        "/documents/{documentId}/prepare-signature": {
+            "get": {
+                "summary": "Selecionar o campo de assinatura",
+                "description": "Essa rota ira selecionar a posição no documento que deverá ficar a assinatura",
+                "tags": ["Signature"],
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Id para a busca do documento",
+                        "required": true
+                    }
+                ],
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "401": {
+                        "description": "Não autorizado"
                     },
-                    "400" : {
-                        "description" : "Documento não encontrado"
+                    "400": {
+                        "description": "Documento não encontrado"
                     },
-                    "200" : {
-                        "description" : "OK",
-                        "content" : {
-                            "application/html" : {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/html": {
                                 "schema": {
                                     "type": "string",
                                     "format": "binary"
@@ -101,32 +109,34 @@
                 }
             }
         },
-        "/documents/{documentId}/download" : {
-                "get" : {
-                    "summary" : "Baixar o PDF",
-                    "description" : "Após assinado o documento estará disponivel para download",
-                    "tags" : ["Documents","Download"],
-                    "parameters" : [{
-                        "name" : "documentId",
-                        "in" : "path",
-                        "description" : "Id para a busca do documento",
-                        "required" : true 
-                    }],
-                    "security" : [{ "bearerAuth" : [] }],
-                    "responses" : {
-                    "401" : {
-                        "description" :  "Não autorizado"
+        "/documents/{documentId}/download": {
+            "get": {
+                "summary": "Baixar o PDF",
+                "description": "Após assinado o documento estará disponivel para download",
+                "tags": ["Documents", "Download"],
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Id para a busca do documento",
+                        "required": true
+                    }
+                ],
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "401": {
+                        "description": "Não autorizado"
                     },
-                    "409" : {
-                        "description" : "Documento não está completo"
+                    "409": {
+                        "description": "Documento não está completo"
                     },
-                    "200" : {
-                        "description" : "OK",
-                        "content" : {
-                            "application/pdf" : {
-                                "schema" : {
-                                    "type" : "string",
-                                    "format" : "binary"
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
                                 }
                             }
                         }
@@ -134,44 +144,44 @@
                 }
             }
         },
-        "/documents" : {
-            "post" : {
-                "summary" : "Enviar o PDF",
-                "description" : "O PDF é enviado, dando inicio ao processo",
-                "tags" : ["Documents"],
-                "security" : [{ "bearerAuth" : [] }],
-                "requestBody" : {
-                    "content" : {
-                        "application/pdf" : {
-                            "schema" : {
-                                "type" : "string",
-                                "format" : "binary"
+        "/documents": {
+            "post": {
+                "summary": "Enviar o PDF",
+                "description": "O PDF é enviado, dando inicio ao processo",
+                "tags": ["Documents"],
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "content": {
+                        "application/pdf": {
+                            "schema": {
+                                "type": "string",
+                                "format": "binary"
                             }
                         }
                     }
                 },
-                "responses" : {
-                    "401" : {
-                        "description" :  "Não autorizado"
+                "responses": {
+                    "401": {
+                        "description": "Não autorizado"
                     },
-                    "200" : {
-                        "description" : "OK",
-                        "content" : {
-                            "application/json" : {
-                                "schema" : {
-                                    "type" : "object",
-                                    "properties" : {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
                                         "documentId": {
-                                            "type" : "number",
-                                            "format" : "int"
+                                            "type": "number",
+                                            "format": "int"
                                         },
                                         "status": {
-                                            "type" : "string"
+                                            "type": "string"
                                         }
                                     },
-                                    "example" : {
-                                        "documentId" : "1746582479887",
-                                        "status" : "uploaded"
+                                    "example": {
+                                        "documentId": "1746582479887",
+                                        "status": "uploaded"
                                     }
                                 }
                             }
@@ -180,59 +190,63 @@
                 }
             }
         },
-        "/documents/{documentId}/signers" : {
-            "post" : {
-                "summary" : "Adicionar Assinantes",
-                "description" : "Adicionar aqueles que devem assinar o documento",
-                "tags" : ["Signature"],
-                "security" : [{ "bearerAuth" : [] }],
-                "parameters" : [{
-                    "name" : "documentId",
-                    "in" : "path",
-                    "description" : "Id para a busca do documento",
-                    "required" : true 
-                }],
-                "requestBody" : {
-                    "content" : {
-                        "application/json" : {
-                            "schema" : {
-                                "$ref" : "#/components/schemas/signer"
+        "/documents/{documentId}/signers": {
+            "post": {
+                "summary": "Adicionar Assinantes",
+                "description": "Adicionar aqueles que devem assinar o documento",
+                "tags": ["Signature"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Id para a busca do documento",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/signer"
                             }
                         }
                     }
                 },
-                "result":{
+                "result": {
                     "400": {
                         "description": "Erro ao adicionar signatário."
                     },
-                    "200":{
+                    "200": {
                         "description": "Signatários adicionados com sucesso."
                     }
                 }
             }
         },
-        "/documents/{documentId}/signature-fields" : {
-            "post" : {
-                "summary" : "Posicionar Campo",
-                "description" : "Posicionar campo de assinatura na posição correta",
-                "tags" : ["Signature", "Fields"],
-                "security" : [{ "bearerAuth" : [] }],
-                "parameters" : [{
-                    "name" : "documentId",
-                    "in" : "path",
-                    "description" : "Id para a busca do documento",
-                    "required" : true 
-                }],
-                "requestBody" : {
-                    "content" : {
-                        "application/json" : {
-                            "schema" : {
-                                "$ref" : "#/components/schemas/field"
+        "/documents/{documentId}/signature-fields": {
+            "post": {
+                "summary": "Posicionar Campo",
+                "description": "Posicionar campo de assinatura na posição correta",
+                "tags": ["Signature", "Fields"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Id para a busca do documento",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/field"
                             }
                         }
                     }
                 },
-                "responses":{
+                "responses": {
                     "400": {
                         "description": "Não foi possivel adicionar o campo"
                     },
@@ -242,28 +256,30 @@
                 }
             }
         },
-        "/documents/{documentId}/sign" : {
-            "post" : {
-                "summary" : "Assinar Documento",
-                "description" : "O usuario adicionado no final '/signers' assina o documento",
-                "tags" : ["Signature"],
-                "security" : [{ "bearerAuth" : [] }],
-                "parameters" : [{
-                    "name" : "documentId",
-                    "in" : "path",
-                    "description" : "Id para a busca do documento",
-                    "required" : true 
-                }],
-                "requestBody" : {
-                    "content" : {
-                        "application/json" : {
-                            "schema" : {
-                                "$ref" : "#/components/schemas/signer"
+        "/documents/{documentId}/sign": {
+            "post": {
+                "summary": "Assinar Documento",
+                "description": "O usuario adicionado no final '/signers' assina o documento",
+                "tags": ["Signature"],
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Id para a busca do documento",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/signer"
                             }
                         }
                     }
                 },
-                "responses":{
+                "responses": {
                     "400": {
                         "description": "Documento Assinado."
                     },
@@ -274,86 +290,84 @@
             }
         }
     },
-    "components" : {
-        "schemas" : {
-            "signer" : {
-                "type" : "object",
-                "properties" : {
-                    "name" : {
+    "components": {
+        "schemas": {
+            "signer": {
+                "type": "object",
+                "properties": {
+                    "name": {
                         "type": "string"
                     },
-                    "email" : {
-                        "type" : "string",
-                        "format" : "email"
+                    "email": {
+                        "type": "string",
+                        "format": "email"
                     },
-                    "authcode" : {
-                        "type" : "string"
-                    },
-                    "order" : {
-                        "type" : "number",
-                        "format" : "int"
+                    "order": {
+                        "type": "number",
+                        "format": "int"
                     }
                 },
-                "example" : {
-                    "name" : "Fulano Beltrano",
-                    "email" : "user@example.com",
-                    "authcode" : "e1a8t9",
-                    "order" : 1
+                "example": {
+                    "name": "Fulano Beltrano",
+                    "email": "user@example.com",
+                    "order": 1
                 }
             },
-            "doc" : {
-                "type" : "object",
-                "properties" : {
-                    "documentId" : {
-                        "type" : "string" 
+            "doc": {
+                "type": "object",
+                "properties": {
+                    "documentId": {
+                        "type": "string"
                     },
-                    "status" : {
-                        "type" : "string"
+                    "status": {
+                        "type": "string"
                     },
-                    "signer" : {
-                        "type" : "array",
-                        "items" : {
-                            "type" : "object",
-                            "properties" : {
-                                "email" : {
-                                    "type" : "string",
-                                    "format" : "email"
+                    "signer": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "format": "email"
                                 },
-                                "status" : {
-                                    "type" : "string"
+                                "status": {
+                                    "type": "string"
                                 }
                             }
-                        } 
+                        }
                     }
                 },
-                "example" : {
-                    "documentId" : "1746582479887",
-                    "status" : "in_progress",
-                    "signer" : [{
-                        "email" : "user@example.com",
-                        "status" : "pending"
-                    }]
+                "example": {
+                    "documentId": "1746582479887",
+                    "status": "in_progress",
+                    "signer": [
+                        {
+                            "email": "user@example.com",
+                            "status": "pending"
+                        }
+                    ]
                 }
             },
-            "field" : {
-                "type" : "object",
-                "properties" : {
-                    "x" : {
-                        "type" : "number",
-                        "format" : "float"
+            "field": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number",
+                        "format": "float"
                     },
-                    "y" : {
-                        "type" : "number",
-                        "format" : "float"
+                    "y": {
+                        "type": "number",
+                        "format": "float"
                     },
-                    "email" : {
-                        "type" : "string",
-                        "format" : "email"
+                    "email": {
+                        "type": "string",
+                        "format": "email"
                     }
                 },
-                "example" : {
-                    "x" : 52.053,
-                    "y" : 89.009,
+                "example": {
+                    "x": 52.053,
+                    "y": 89.009,
                     "email": "user@example.com"
                 }
             }

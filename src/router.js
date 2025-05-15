@@ -20,6 +20,11 @@ const uploadsDir = path.join(process.cwd(), "uploads");
 fs.mkdirSync(uploadsDir, { recursive: true })
 router.use('/documents/uploads', express.static(uploadsDir))
 
+// STATUS ROUTES
+router.get('/status', async (_, reply) => {
+    return reply.status(200).send({ message: "API funcionando" });
+});
+
 // GET METHODS -----------------------------------------------
 // VISUALIZAR DOC
 router.get('/documents/:documentId', verifyToken, async (request, reply) => {
@@ -47,8 +52,9 @@ router.get('/documents/:documentId/prepare-signature', async (request, reply) =>
 router.get('/documents/:documentId/download', verifyToken, async (request, reply) => {
     const id = request.params.documentId
     const doc = new Doc()
-    const status = await doc.getDoc(id)
-    if (status.status === 'completed') {
+    const status = await doc.getDoc(id);
+
+    if (status.message.status === 'completed') {
         reply.download(`uploads/${id}.pdf`, (err) => {
             if (err) {
                 return reply.status(500).send({ error: err })
@@ -63,7 +69,6 @@ router.get('/documents/:documentId/download', verifyToken, async (request, reply
 //POST METHODS -------------------------------------------------
 // ENVIAR ARQUIVOS
 router.post('/documents', verifyToken, storage.single('file'), async (request, reply) => {
-    console.log('recebi o arquivo', request.file);
     const id = request.file.filename.split('.')[0]
     const doc = new Doc()
     const result = await doc.addDoc(id, request.file);
@@ -74,11 +79,11 @@ router.post('/documents', verifyToken, storage.single('file'), async (request, r
 //ADICIONAR QUEM ASSINARÁ
 router.use(express.json())
 router.post('/documents/:documentId/signers', verifyToken, async (request, reply) => {
-    const { name, email, authcode, order } = request.body
+    const { name, email, order } = request.body
     const id = request.params.documentId
     const signer = new Signer()
 
-    const result = await signer.addSigner(id, name, email, authcode, order)
+    const result = await signer.addSigner(id, name, email, order)
 
     return reply.status(result.status).send({ message: result.message })
 })
@@ -88,17 +93,18 @@ router.post('/documents/:documentId/signature-fields', verifyToken, async (reque
     const { x, y, email } = request.body
     const id = request.params.documentId
     const signer = new Field()
-    const result = signer.addField(id, email, x, y)
+    const result = await signer.addField(id, email, x, y);
+
     return reply.status(result.status).send({ message: result.message })
 })
 
 //ADICIONAR A ASSINATURA
 router.post('/documents/:documentId/sign', verifyToken, async (request, reply) => {
-    const { authcode, name, email, } = request.body
+    const { name, email, } = request.body
     const id = request.params.documentId
     const signer = new Signer()
     const doc = new Doc()
-    const result = await signer.complete(authcode)
+    const result = await signer.complete(id);
 
     if (result.status === 200) {
         doc.complete(id, name, email)
