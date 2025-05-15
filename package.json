@@ -8,8 +8,8 @@
         "wait-for-app": "node infra/scripts/wait-for-app.js",
         "dev": "nodemon server.js",
         "start": "node server.js",
-        "test": "jest --runInBand",
-        "test:watch": "jest --watchAll --runInBand"
+        "test": "jest --runInBand --verbose",
+        "test:watch": "jest --watchAll --runInBand --verbose"
     },
     "repository": {
         "type": "git",
