@@ -38,13 +38,24 @@ router.get('/documents/:documentId', verifyToken, async (request, reply) => {
 // ESCOLHER O CAMPO
 router.get('/documents/:documentId/prepare-signature', async (request, reply) => {
     const id = request.params.documentId
-    const signer = await new Signer().getSigners(id)
+    const signer = await new Signer().getSigners(id);
+
     if (signer.status === 200) {
-        const signerEmail = signer.message[0].email
-        const signerName = signer.message[0].name
-        const p = path.resolve('src/index.ejs')
-        const token = process.env.TOKEN
-        reply.render(p, { id, signerName, signerEmail, token })
+        const signerEmail = signer.message[0].email;
+        const signerName = signer.message[0].name;
+        const p = path.resolve('src/index.ejs');
+        const token = process.env.TOKEN;
+
+        const doc = new Doc();
+        const docDetails = await doc.getDoc(id);
+
+        return reply.render(p, {
+            id,
+            signerName,
+            signerEmail,
+            token,
+            docLink: typeof docDetails === 'object' ? docDetails.message.links.doc : '',
+        });
     }
 })
 
