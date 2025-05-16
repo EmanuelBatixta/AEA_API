@@ -83,7 +83,7 @@ export class Doc {
 
     async getDoc(docId) {
         const doc = await sql`SELECT d.document_id AS doc_id, d.status AS d_status, email, s.status AS s_status FROM documents d JOIN signers s ON d.document_id = s.document_id WHERE d.document_id = ${docId}`
-        const links = this.uploadFile.getLink(docId);
+        const links = this.uploadFile.getLink(`${docId}.pdf`);
 
         if (doc.length) {
             const docFormated = {
