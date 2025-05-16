@@ -103,14 +103,16 @@
         <p id="user-email">E-mail: <%= signerEmail %></p>
         <p id="timestamp">Data e Hora:</p>
       </div>
-      <label for="code" id="auth"
-        >Codigo de Autenticação:
-        <input type="text" name="code" id="code" />
+      <label for="code" id="auth">
+        <!-- Codigo de Autenticação: -->
+        <!-- <input type="text" name="code" id="code" /> -->
       </label>
       <button id="sign-button">Executar Assinatura</button>
     </div>
     <script>
-      const pdfUrl = "/v1/documents/uploads/<%= id %>.pdf";
+      // const pdfUrl = "/v1/documents/uploads/<%= id %>.pdf";
+      const pdfUrl = "<%= docLink %>";
+
       const canvas = document.getElementById("pdf-canvas");
       const ctx = canvas.getContext("2d");
       const signature = document.getElementById("signature");
