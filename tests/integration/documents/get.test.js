@@ -32,6 +32,13 @@ test('GET /v1/documents/:documentId should return 200 and signers data', async (
     expect(body.message.status).toBeDefined();
     expect(body.message.signers).toBeDefined();
     expect(body.message.signers.length).toBeGreaterThanOrEqual(1);
+    expect(body.message.links).toBeDefined();
+    expect(typeof body.message.links === 'object').toBe(true);
+    expect(typeof body.message.links.doc === 'string').toBe(true);
+    expect(typeof body.message.links.original === 'string').toBe(true);
+    expect(typeof body.message.links.original === 'string').toBe(true);
+    expect(body.message.links.doc.length).toBeGreaterThanOrEqual(1);
+    expect(body.message.links.original.length).toBeGreaterThanOrEqual(1);
 });
 
 test('GET /v1/documents/:documentId/download should return 200 and PDF file', async () => {

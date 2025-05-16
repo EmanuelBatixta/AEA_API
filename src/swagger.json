@@ -7,8 +7,8 @@
     },
     "servers": [
         {
-            "url": "http://localhost:3333/v1",
-            "description": "API DE TESTE"
+            "url": "http://[DOMAIN]/v1",
+            "description": "API DE ASSINATURA ELETRONICA"
         }
     ],
     "paths": {

@@ -6,7 +6,7 @@ dotenv.config({
     path: process.env.NODE_ENV === 'production' ? '.env' : '.env.development',
 });
 
-test('POST to /v1/documents should return 200 and documentId', async () => {
+test('POST to /v1/documents should upload file and return 200 and documentId', async () => {
     const response = await uploadDocument();
     const body = response.data;
 

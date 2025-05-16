@@ -69,7 +69,7 @@ router.get('/documents/:documentId/download', verifyToken, async (request, reply
 //POST METHODS -------------------------------------------------
 // ENVIAR ARQUIVOS
 router.post('/documents', verifyToken, storage.single('file'), async (request, reply) => {
-    const id = request.file.filename.split('.')[0]
+    const id = String(new Date().getTime());
     const doc = new Doc()
     const result = await doc.addDoc(id, request.file);
 
