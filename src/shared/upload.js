@@ -110,8 +110,8 @@ class UploadLocalFile {
      */
     getLink(filename) {
         return {
-            doc: `http://localhost:3333/documents/uploads/${filename}`,
-            original: `http://localhost:3333/documents/uploads/original_${filename}`,
+            doc: `http://localhost:3333/v1/documents/uploads/${filename}`,
+            original: `http://localhost:3333/v1/documents/uploads/original_${filename}`,
         }
     }
 
