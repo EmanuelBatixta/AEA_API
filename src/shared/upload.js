@@ -63,11 +63,11 @@ class UploadAwsFile {
      * @param {string} key - nome do arquivo ou identificador único para o mesmo
      */
     async read(key) {
-        const link = this.getFileLink(key);
-        console.log(link);
+        const links = this.getFileLink(key);
+        console.log(links.doc);
 
         const response = await axios.get(
-            link,
+            links.doc,
             {
                 headers: {
                     Accept: '*/*',
