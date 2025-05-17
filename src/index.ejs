@@ -230,7 +230,8 @@
 
       // assinar documento
       signButton.addEventListener("click", async () => {
-        const code = document.querySelector("#code").value.trim();
+        // const code = document.querySelector("#code").value.trim();
+
         {
           await fetch(`/v1/documents/<%= id %>/sign`, {
             method: "POST",
