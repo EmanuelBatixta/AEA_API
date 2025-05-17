@@ -242,7 +242,15 @@
             body: JSON.stringify({ email: userEmail, name: userName }),
           })
             .then((response) => response.json())
-            .then((data) => console.log(data))
+            .then((data) => {
+              console.log(data);
+
+              const btn = document.getElementById("sign-button");
+              if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = "Assinatura Realizada";
+              }
+            })
             .catch((error) => console.error("Erro ao assinar", error));
         }
       });
