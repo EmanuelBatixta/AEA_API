@@ -74,9 +74,15 @@
         border-radius: 4px;
         cursor: pointer;
         font-size: 16px;
+        transition-duration: 0.3s;
       }
       #menu button:hover {
         background-color: #0056b3;
+      }
+      #menu button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        pointer-events: none;
       }
       #auth {
         text-align: center;
