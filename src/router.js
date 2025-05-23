@@ -27,7 +27,7 @@ router.get('/status', async (_, reply) => {
 
 // GET METHODS -----------------------------------------------
 // VISUALIZAR DOC
-router.get('/documents/:documentId', verifyToken, async (request, reply) => {
+router.get('/documents/:documentId', async (request, reply) => {
     const id = request.params.documentId
     const doc = new Doc()
     const status = await doc.getDoc(id)

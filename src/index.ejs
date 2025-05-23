@@ -33,6 +33,10 @@
       }
       #pdf-canvas {
         cursor: pointer;
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
       }
       .signature-placeholder {
         width: 120px;
@@ -145,6 +149,7 @@
 
       let pdfDoc = null;
       let scale = 1.5;
+      let pdfViewport = null;
 
       function renderPage(pageNum) {
         pdfDoc.getPage(pageNum).then((page) => {
@@ -161,6 +166,8 @@
 
           canvas.width = adjustedViewport.width;
           canvas.height = adjustedViewport.height;
+
+          pdfViewport = adjustedViewport;
 
           const renderContext = {
             canvasContext: ctx,
@@ -192,46 +199,62 @@
         event.preventDefault();
       });
 
-      // mover o ponto e enviar
       canvas.addEventListener("drop", async (event) => {
         event.preventDefault();
 
         const rect = canvas.getBoundingClientRect();
 
-        const x = event.clientX - rect.left - dragOffsetX;
-        const y = event.clientY - rect.top - dragOffsetY;
+        const xCanvas = event.clientX - rect.left - dragOffsetX;
+        const yCanvas = event.clientY - rect.top - dragOffsetY;
 
         signature.style.left = `${Math.max(
           0,
-          Math.min(x, rect.width - signature.offsetWidth)
-        )}px`; // Restrição horizontal
+          Math.min(xCanvas, canvas.width - signature.offsetWidth)
+        )}px`;
         signature.style.top = `${Math.max(
           0,
-          Math.min(y, rect.height - signature.offsetHeight)
-        )}px`; // Restrição vertical
+          Math.min(yCanvas, canvas.height - signature.offsetHeight)
+        )}px`;
 
-        //console.log('Coordenadas finais:', { x, y });
+        // Converta para coordenadas do PDF para enviar ao backend
+        const xPdf = (xCanvas / canvas.width) * pdfViewport.width;
+        const yPdf =
+          pdfViewport.height -
+          (yCanvas / canvas.height) * pdfViewport.height;
 
-        {
-          await fetch(`/v1/documents/<%= id %>/signature-fields`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              authorization: `Bearer <%= token %>`,
-            },
-            body: JSON.stringify({
-              id: "<%= id %>",
-              x: x,
-              y: y,
-              email: userEmail,
-            }),
+        await fetch(`/v1/documents/<%= id %>/signature-fields`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer <%= token %>`,
+          },
+          body: JSON.stringify({
+            id: "<%= id %>",
+            x: xPdf,
+            y: yPdf,
+            email: userEmail,
+          }),
+        })
+          .then((response) => response.json())
+          .then(async (data) => {
+            console.log(data);
+            const field = await new Field().getField("<%= id %>");
+            const signatureHeight = 70;
+
+            pdfDoc.getPage(1).then((page) => {
+              page.drawText(
+                `Assinado digitalmente por:\n${userName.toUpperCase()}\n${userEmail}\nData: ${formatTimestamp()}`,
+                {
+                  x: field[0].x - signatureWidth ,
+                  y: field[0].y - signatureHeight,
+                  size: 14,
+                }
+              );
+            });
           })
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) =>
-              console.error("Erro ao salvar coordenadas:", error)
-            );
-        }
+          .catch((error) =>
+            console.error("Erro ao salvar coordenadas:", error)
+          );
       });
 
       // assinar documento
