@@ -36,7 +36,7 @@ router.get('/documents/:documentId', async (request, reply) => {
 
 
 // ESCOLHER O CAMPO
-router.get('/documents/:documentId/prepare-signature', async (request, reply) => {
+router.get('/documents/:documentId/prepare-signature', verifyToken, async (request, reply) => {
     const id = request.params.documentId
     const signer = await new Signer().getSigners(id);
 
