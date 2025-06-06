@@ -1,9 +1,6 @@
 # AEA_API
 
-Bem-vindo ao repositório **AEA_API**! Este projeto foi desenvolvido para [descreva brevemente o propósito do projeto].
-
 ## Funcionalidades
-### Funcionalidades
 
 - Gerenciamento de usuários (criação, leitura, atualização e exclusão).
 - Autenticação e autorização com tokens JWT.
@@ -27,7 +24,7 @@ Certifique-se de ter os seguintes requisitos instalados:
 
 1. Clone o repositório:
     ```bash
-    git clone https://github.com/emanuelbatixta/AEA_API.git
+    git clone https://github.com/josemarjp/AEA_API.git
     ```
 2. Navegue até o diretório do projeto:
     ```bash
@@ -37,10 +34,6 @@ Certifique-se de ter os seguintes requisitos instalados:
     ```bash
     npm install
     ```
-
-## Uso
-
-[Explique como usar o projeto, incluindo exemplos de comandos ou código.]
 
 ## Contribuição
 
